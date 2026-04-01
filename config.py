@@ -1,6 +1,6 @@
 # Горячая клавиша для записи (toggle)
 # Первое нажатие — начать запись, второе — остановить и распознать
-HOTKEY = "ctrl+alt"
+HOTKEY = "f12"
 
 # Модель Whisper: tiny, base, small, medium, large-v3
 # large-v3 — лучшее качество, на RTX 4070 Ti Super работает быстро
