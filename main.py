@@ -1,5 +1,12 @@
 import sys
 import os
+import ctypes
+
+# Single instance check via Windows mutex
+_mutex = ctypes.windll.kernel32.CreateMutexW(None, True, "whisper-hotkey-mutex")
+if ctypes.windll.kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+    ctypes.windll.user32.MessageBoxW(0, "whisper-hotkey уже запущен", "whisper-hotkey", 0x40)
+    sys.exit(0)
 
 # Add NVIDIA DLL directories to PATH before any CUDA imports
 _venv = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".venv", "Lib", "site-packages")
@@ -14,7 +21,6 @@ for _nv_dir in [
 
 import threading
 import time
-import ctypes
 import logging
 import traceback
 
