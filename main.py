@@ -2,6 +2,13 @@ import sys
 import os
 import ctypes
 
+# Base directory: exe location (PyInstaller) or script directory
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+    sys.path.insert(0, BASE_DIR)  # allow config.py override next to exe
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Single instance check via Windows mutex
 _mutex = ctypes.windll.kernel32.CreateMutexW(None, True, "whisper-hotkey-mutex")
 if ctypes.windll.kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
@@ -9,7 +16,7 @@ if ctypes.windll.kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
     sys.exit(0)
 
 # Add NVIDIA DLL directories to PATH before any CUDA imports
-_venv = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".venv", "Lib", "site-packages")
+_venv = os.path.join(BASE_DIR, ".venv", "Lib", "site-packages")
 for _nv_dir in [
     os.path.join(_venv, "nvidia", "cublas", "bin"),
     os.path.join(_venv, "nvidia", "cudnn", "bin"),
@@ -37,8 +44,8 @@ from config import (
     BEEP_START_FREQ, BEEP_START_DURATION, BEEP_STOP_FREQ, BEEP_STOP_DURATION,
 )
 
-# Logging to file next to the script
-LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "whisper-hotkey.log")
+# Logging to file next to the exe/script
+LOG_PATH = os.path.join(BASE_DIR, "whisper-hotkey.log")
 logging.basicConfig(
     filename=LOG_PATH,
     level=logging.INFO,
